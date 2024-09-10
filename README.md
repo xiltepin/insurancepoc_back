@@ -1,26 +1,3 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
 
@@ -56,30 +33,79 @@ $ npm run test:e2e
 
 # test coverage
 $ npm run test:cov
-```
+
+#install validator and transformer. It will help to validate the body
+$ npm i --save class-validator class-transformer
 
 ## Resources
 
-Check out a few resources that may come in handy when working with NestJS:
+#Data table script
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Tables and Schema
+CustomerInfo Table:
 
-## Support
+Stores general information about the customers.
+sql
+Copy code
+CREATE TABLE CustomerInfo (
+    CustomerID SERIAL PRIMARY KEY,
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    DateOfBirth DATE NOT NULL,
+    Address TEXT,
+    PhoneNumber VARCHAR(15),
+    Email VARCHAR(100) UNIQUE
+);
+PolicyHolder Table:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Stores policy details and links to CustomerInfo.
+sql
+Copy code
+CREATE TABLE PolicyHolder (
+    PolicyHolderID SERIAL PRIMARY KEY,
+    CustomerID INT NOT NULL,
+    PolicyNumber VARCHAR(50) UNIQUE NOT NULL,
+    PolicyStartDate DATE NOT NULL,
+    PolicyEndDate DATE NOT NULL,
+    CoverageType VARCHAR(50),
+    PremiumAmount DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (CustomerID) REFERENCES CustomerInfo(CustomerID) ON DELETE CASCADE
+);
+Vehicle Table:
 
-## Stay in touch
+Stores information about the vehicles covered by policies.
+sql
+Copy code
+CREATE TABLE Vehicle (
+    VehicleID SERIAL PRIMARY KEY,
+    PolicyHolderID INT NOT NULL,
+    LicensePlate VARCHAR(15) UNIQUE NOT NULL,
+    VIN VARCHAR(17) UNIQUE NOT NULL,
+    Make VARCHAR(50),
+    Model VARCHAR(50),
+    Year INT,
+    Color VARCHAR(30),
+    FOREIGN KEY (PolicyHolderID) REFERENCES PolicyHolder(PolicyHolderID) ON DELETE CASCADE
+);
+Compensation Table:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Stores compensation details related to claims.
+sql
+Copy code
+CREATE TABLE Compensation (
+    CompensationID SERIAL PRIMARY KEY,
+    VehicleID INT NOT NULL,
+    ClaimDate DATE NOT NULL,
+    ClaimAmount DECIMAL(15, 2) NOT NULL,
+    CompensationType VARCHAR(50) CHECK (CompensationType IN ('Body Damage', 'Total Loss')),
+    Description TEXT,
+    FOREIGN KEY (VehicleID) REFERENCES Vehicle(VehicleID) ON DELETE CASCADE
+);
+Relationships and Constraints
+CustomerInfo to PolicyHolder: One-to-Many relationship (one customer can have multiple policies).
+PolicyHolder to Vehicle: One-to-Many relationship (one policyholder can insure multiple vehicles).
+Vehicle to Compensation: One-to-Many relationship (one vehicle can have multiple compensations).
+Notes
+Primary Key: Unique identifier for each record.
+Foreign Key: Establishes relationships between tables.
+Constraints: Ensure data integrity (e.g., NOT NULL, UNIQUE, CHECK).
