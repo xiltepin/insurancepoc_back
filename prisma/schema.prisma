@@ -1,62 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-  output = "../node_modules/.prisma/client"
-}
-
 model User {
-  id   Int    @id(map: "user_pk") @default(autoincrement())
-  name String
+  id    Int    @id(map: "user_pk") @default(autoincrement())
+  name  String
   email String @unique
 }
 
-model customerinfo {
-  customerid   Int            @id @default(autoincrement())
-  firstname    String         @db.VarChar(50)
-  lastname     String         @db.VarChar(50)
-  dateofbirth  DateTime       @db.Date
-  address      String?
-  phonenumber  String?        @db.VarChar(15)
-  email        String?        @unique @db.VarChar(100)
-  policyholder policyholder[]
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model compensation {
-  compensationid   Int      @id @default(autoincrement())
+model Compensation {
+  compensationid   Int      @id(map: "compensation_pkey") @default(autoincrement())
   vehicleid        Int
   claimdate        DateTime @db.Date
   claimamount      Decimal  @db.Decimal(15, 2)
   compensationtype String?  @db.VarChar(50)
   description      String?
-  vehicle          vehicle  @relation(fields: [vehicleid], references: [vehicleid], onDelete: Cascade, onUpdate: NoAction)
+  Vehicle          Vehicle  @relation(fields: [vehicleid], references: [vehicleid], onDelete: Cascade, onUpdate: NoAction, map: "compensation_vehicleid_fkey")
 }
 
-model policyholder {
-  policyholderid  Int          @id @default(autoincrement())
+model CustomerInfo {
+  customerid   Int            @id(map: "customerinfo_pkey") @default(autoincrement())
+  firstname    String         @db.VarChar(50)
+  lastname     String         @db.VarChar(50)
+  dateofbirth  DateTime       @db.Date
+  address      String?
+  phonenumber  String?        @db.VarChar(15)
+  email        String?        @unique(map: "customerinfo_email_key") @db.VarChar(100)
+  PolicyHolder PolicyHolder[]
+}
+
+model PolicyHolder {
+  policyholderid  Int          @id(map: "policyholder_pkey") @default(autoincrement())
   customerid      Int
-  policynumber    String       @unique @db.VarChar(50)
+  policynumber    String       @unique(map: "policyholder_policynumber_key") @db.VarChar(50)
   policystartdate DateTime     @db.Date
   policyenddate   DateTime     @db.Date
   coveragetype    String?      @db.VarChar(50)
   premiumamount   Decimal      @db.Decimal(10, 2)
-  customerinfo    customerinfo @relation(fields: [customerid], references: [customerid], onDelete: Cascade, onUpdate: NoAction)
-  vehicle         vehicle[]
+  CustomerInfo    CustomerInfo @relation(fields: [customerid], references: [customerid], onDelete: Cascade, onUpdate: NoAction, map: "policyholder_customerid_fkey")
+  Vehicle         Vehicle[]
 }
 
-model vehicle {
-  vehicleid      Int            @id @default(autoincrement())
+model Vehicle {
+  vehicleid      Int            @id(map: "vehicle_pkey") @default(autoincrement())
   policyholderid Int
-  licenseplate   String         @unique @db.VarChar(15)
-  vin            String         @unique @db.VarChar(17)
+  licenseplate   String         @unique(map: "vehicle_licenseplate_key") @db.VarChar(15)
+  vin            String         @unique(map: "vehicle_vin_key") @db.VarChar(17)
   make           String?        @db.VarChar(50)
   model          String?        @db.VarChar(50)
   year           Int?
   color          String?        @db.VarChar(30)
-  compensation   compensation[]
-  policyholder   policyholder   @relation(fields: [policyholderid], references: [policyholderid], onDelete: Cascade, onUpdate: NoAction)
+  Compensation   Compensation[]
+  PolicyHolder   PolicyHolder   @relation(fields: [policyholderid], references: [policyholderid], onDelete: Cascade, onUpdate: NoAction, map: "vehicle_policyholderid_fkey")
 }
