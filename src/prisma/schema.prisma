@@ -10,6 +10,7 @@ datasource db {
 model User {
   id   Int    @id(map: "user_pk") @default(autoincrement())
   name String
+  email String @unique
 }
 
 model customerinfo {
