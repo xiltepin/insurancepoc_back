@@ -1,7 +1,7 @@
 
 ## Description
 
-[Reference] https://medium.com/@itsuki.enjoy/postgresql-with-next-js-and-prisma-44f66a05378a
+
 
 ## Project setup
 
