@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Prisma } from '@prisma/client';
+import { User } from '@prisma/client';
 import { Logger } from '@nestjs/common';
 
 
@@ -11,6 +12,7 @@ export class UserController {
 
   @Post()
   async createUser(@Body() userData: Prisma.UserCreateInput) {
+    this.logger.log('createUser function invoked from:user.controller.ts');
     return this.userService.createUser(userData);
   }
 
@@ -25,13 +27,15 @@ export class UserController {
     return this.userService.findOne(+id);
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return this.userService.update(+id, updateUserDto);
-  // }
+  @Patch(':id')
+  async updateUser(@Param('id') id: string, @Body() userData: Prisma.UserUpdateInput) {
+    this.logger.log('patchUser function invoked from:user.controller.ts');
+    return this.userService.updateUser(Number(id), userData);
+  }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<User> {
+    return this.userService.deleteUser(id);
   }
+
 }
