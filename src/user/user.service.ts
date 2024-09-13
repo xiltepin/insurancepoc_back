@@ -1,8 +1,8 @@
 /* eslint-disable */
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { User } from '@prisma/client';
-import { Prisma } from '@prisma/client';
+import { User, Prisma } from '@prisma/client';
+
 
 @Injectable()
 export class UserService {
@@ -15,16 +15,8 @@ export class UserService {
     });
   }
 
-  async findAll(): Promise<User[]> {
-    this.logger.log('findAll function invoked from:user.service.ts');
+  async getAllUsers() {
     return this.prisma.user.findMany();
-  }
-
-  findOne(id: number) : Promise<User | null> {
-    this.logger.log('findOne function invoked from:user.service.ts');
-    return this.prisma.user.findUnique({
-      where: { id },
-    });
   }
 
   async getUserById(id: number): Promise<User | null> {
