@@ -1,32 +1,28 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { Logger } from '@nestjs/common';
 
 
 @Controller('users')
 export class UserController {
+  private readonly logger = new Logger(UserController.name);
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  async createUser(@Body() userData: Prisma.UserCreateInput) {
+    return this.userService.createUser(userData);
   }
 
   @Get()
   findAll() {
+    this.logger.log('findAll function invoked from:user.controller.ts');
     return this.userService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
-  }
-
-  @Get(':id')
-  async getUserById(@Param('id') id: string): Promise<User | null> {
-    return this.userService.getUserById(Number(id));
   }
 
   // @Patch(':id')
