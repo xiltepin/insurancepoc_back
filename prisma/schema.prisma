@@ -25,14 +25,14 @@ model Compensation {
 }
 
 model CustomerInfo {
-  customerid   Int            @id(map: "customerinfo_pkey") @default(autoincrement())
-  firstname    String         @db.VarChar(50)
-  lastname     String         @db.VarChar(50)
-  dateofbirth  DateTime       @db.Date
-  address      String?
-  phonenumber  String?        @db.VarChar(15)
-  email        String?        @unique(map: "customerinfo_email_key") @db.VarChar(100)
-  PolicyHolder PolicyHolder[]
+  customerid    Int            @id(map: "customerinfo_pkey") @default(autoincrement())
+  first_name    String         @db.VarChar(50)
+  last_name     String         @db.VarChar(50)
+  date_of_birth DateTime       @db.Date
+  address       String?
+  phone_number  String?        @db.VarChar(15)
+  email         String?        @unique(map: "customerinfo_email_key") @db.VarChar(100)
+  Policy_Holder PolicyHolder[]
 }
 
 model PolicyHolder {
