@@ -25,7 +25,7 @@ model Compensation {
 }
 
 model CustomerInfo {
-  customerid    Int            @id(map: "customerinfo_pkey") @default(autoincrement())
+  customer_id   Int            @id(map: "customerinfo_pkey") @default(autoincrement())
   first_name    String         @db.VarChar(50)
   last_name     String         @db.VarChar(50)
   date_of_birth DateTime       @db.Date
@@ -43,7 +43,7 @@ model PolicyHolder {
   policyenddate   DateTime     @db.Date
   coveragetype    String?      @db.VarChar(50)
   premiumamount   Decimal      @db.Decimal(10, 2)
-  CustomerInfo    CustomerInfo @relation(fields: [customerid], references: [customerid], onDelete: Cascade, onUpdate: NoAction, map: "policyholder_customerid_fkey")
+  CustomerInfo    CustomerInfo @relation(fields: [customerid], references: [customer_id], onDelete: Cascade, onUpdate: NoAction, map: "policyholder_customerid_fkey")
   Vehicle         Vehicle[]
 }
 
