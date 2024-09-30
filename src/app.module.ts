@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { PrismaService } from "../prisma/prisma.service";
 import { User } from "./user/entities/user.entity";
+import { CustomerInfoModule } from './customer-info/customer-info.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { User } from "./user/entities/user.entity";
       logging: true,
     }),
     UserModule,
+    CustomerInfoModule,
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
