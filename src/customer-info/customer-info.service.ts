@@ -8,7 +8,11 @@ export class CustomerInfoService {
   constructor(private prisma: PrismaService) {}
 
   async getAllCustomersInfo() {
-    return this.prisma.customerInfo.findMany();
+    return this.prisma.customerInfo.findMany({
+      include: {
+        Vehicles: true, // Include vehicles relation, fix this later. capital letter.
+      },
+    });
   }
 
   async createCustomerInfo(customerData: Prisma.CustomerInfoCreateInput) {
@@ -23,5 +27,4 @@ export class CustomerInfoService {
       },
     });
   }
-
 }
